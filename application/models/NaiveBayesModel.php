@@ -248,6 +248,13 @@ class NaiveBayesModel extends MainModel
 
         // $this->maintence->Debug($attribute);
         $data_uji = $this->getAllDataUji();
+
+        if(empty($data_uji)) {
+            return [
+                'status' => 500
+            ];
+        }
+
         $table = $this->DataUji($optimize);
 
         $this->db->trans_start();
@@ -318,6 +325,10 @@ class NaiveBayesModel extends MainModel
         $this->db->trans_commit();
     }
 
+    /**
+     * Check Kesalahan Pada UJi COba NB PSO dan Non PSO
+     * @return array
+     */
     public function checkFalse()
     {
         $optimize_attribute = $this->db->select('persalinan, prediksi_persalinan')->from('data_uji_nb_optimize')->get();

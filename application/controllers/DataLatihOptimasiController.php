@@ -212,11 +212,13 @@ class DataLatihOptimasiController extends MainController
         $optimize = $this->mappingDataLatihPSO(); // Mapping Data Latih Dulu
 
         // Jika var optimize status == 500 maka handle error
-        if ($optimize['status'] == 500) {
-            $response = [
-                'status' => 'failed',
-                'messages' => 'Data Latih Masih Kosong ',
-            ];
+        if (!empty($optimize['status'])) {
+            if ($optimize['status'] == 500) {
+                $response = [
+                    'status' => 'failed',
+                    'messages' => 'Data Latih Masih Kosong ',
+                ];
+            }
         } else {
             $response = [
                 'status' => 'success',

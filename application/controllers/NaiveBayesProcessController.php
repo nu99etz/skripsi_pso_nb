@@ -218,11 +218,20 @@ class NaiveBayesProcessController extends DataLatihOptimasiController
 
         if (empty($data_latih)) {
             return [
-                'status' => 500
+                'status' => 500,
+                'message' => 'Data Latih Masih Kosong'
             ];
         }
 
         $attribute_optimize = $this->mappingAttributeOptimize();
+
+        if (empty($attribute_optimize)) {
+            return [
+                'status' => 500,
+                'message' => 'Data Latih Belum Di Latih Dengan PSO'
+            ];
+        }
+
         // $this->maintence->Debug($attribute_optimize);
         $record_latih = [];
         foreach ($data_latih as $value) {
@@ -303,11 +312,18 @@ class NaiveBayesProcessController extends DataLatihOptimasiController
         // Mapping Data Non Optimasi
         $attribute = $this->mappingAttribute();
         $record = $this->mappingData();
+        
+        if (@$record_optimize['status'] == 500 || @$record['status'] == 500) {
 
-        if ($record_optimize['status'] == 500 || $record['status'] == 500) {
+            if(!empty($record_optimize['message'])) {
+                $msg = $record_optimize['message'];
+            } else {
+                $msg = 'Data Latih Masih Kosong';
+            }
+
             $response =  [
                 'status' => 'failed',
-                'messages' => 'Data Latih Kosong',
+                'messages' => $msg
             ];
         } else {
 
@@ -363,28 +379,48 @@ class NaiveBayesProcessController extends DataLatihOptimasiController
         $attribute = $this->mappingAttribute();
         $record = $this->mappingData();
 
-        if ($record_optimize['status'] == 500 || $record['status'] == 500) {
+        if (!empty($record_optimize['status']) || !empty($record['status'])) {
 
-            $response =  [
-                'status' => 'failed',
-                'messages' => 'Data Latih Kosong',
-            ];
+            if ($record_optimize['status'] == 500 || $record['status'] == 500) {
+
+                if(!empty($record_optimize['message'])) {
+                    $msg = $record_optimize['message'];
+                } else {
+                    $msg = 'Data Latih Masih Kosong';
+                }
+    
+                $response =  [
+                    'status' => 'failed',
+                    'messages' => $msg
+                ];
+            }
         } else {
 
             $nb_non_optimize = new NaiveBayesController($record, $attribute, $this->getClasses());
-            $this->naivebayes->insertNaiveBayes($nb_non_optimize->run(), $attribute, 'nonoptimize');
+            $ins_no = $this->naivebayes->insertNaiveBayes($nb_non_optimize->run(), $attribute, 'nonoptimize');
 
             $nb_optimize = new NaiveBayesController($record_optimize, $attribute_optimize, $this->getClasses());
-            $this->naivebayes->insertNaiveBayes($nb_optimize->run(), $attribute_optimize);
+            $ins_o = $this->naivebayes->insertNaiveBayes($nb_optimize->run(), $attribute_optimize);
 
-            $flag = $this->naivebayes->checkFalse();
+            if (!empty($ins_no['status']) || !empty($ins_o['status'])) {
 
-            $response = [
-                'status' => 'success',
-                'messages' => 'Data Sukses Di Uji',
-                'particleChoice' => $optimize['bestFitness'],
-                'flag' => $flag
-            ];
+                if ($ins_no['status'] == 500 || $ins_o['status'] == 500) {
+                    $response = [
+                        'status' => 'failed',
+                        'messages' => 'Data Uji Masih Kosong',
+                    ];
+                }
+            } else {
+
+                $flag = $this->naivebayes->checkFalse();
+
+                $response = [
+                    'status' => 'success',
+                    'messages' => 'Data Sukses Di Uji',
+                    'particleChoice' => $optimize['bestFitness'],
+                    'flag' => $flag
+                ];
+            }
         }
 
         echo json_encode($response);

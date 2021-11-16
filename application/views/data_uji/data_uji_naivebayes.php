@@ -36,7 +36,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <h3 class="box-title">Data Uji Naive Bayes Optimasi</h3>
           </div>
           <div class="box-body">
-            <p id="optimize_nb">Total Kesalahan Prediksi = <?php echo $flag['optimizeFlag'];?></p>
+            <p id="optimize_nb">Total Kesalahan Prediksi = <?php echo @$flag['optimizeFlag'];?></p>
             <table id="data-uji-optimize" class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -110,7 +110,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <h3 class="box-title">Data Uji Naive Bayes Non Optimasi</h3>
           </div>
           <div class="box-body">
-            <p id="non_optimize_nb">Total Kesalahan Prediksi = <?php echo $flag['nonOptimizeFlag'];?></p>
+            <p id="non_optimize_nb">Total Kesalahan Prediksi = <?php echo @$flag['nonOptimizeFlag'];?></p>
             <table id="data-uji-nonoptimize" class="table table-bordered table-striped">
               <thead>
                 <tr>

@@ -170,7 +170,7 @@ class DataLatihOptimasiModel extends MainModel
             null
         ];
         $attribute_optimization['order'] = [
-            'optimize_value' => 'ASC'
+            'optimize_value' => 'DESC'
         ];
 
         return $attribute_optimization;
@@ -178,7 +178,7 @@ class DataLatihOptimasiModel extends MainModel
 
     public function AttributeOptimize()
     {
-        $sql = $this->db->select('*')->from('attribute_optimize')->order_by('optimize_value', 'ASC')->get();
+        $sql = $this->db->select('*')->from('attribute_optimize')->order_by('optimize_value', 'DESC')->get();
         return $sql->result_array();
     }
 

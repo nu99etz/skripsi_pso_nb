@@ -187,7 +187,7 @@ class DataLatihOptimasiController extends MainController
             $record[] = $row;
         }
 
-        $pso = new PSOController($record, $post['c1'], $post['c2'], $post['iteration']);
+        $pso = new PSOController($record, $post['c1'], $post['c2'], $post['r1'], $post['r2'], $post['iteration']);
         $optimize = $pso->generateParticle();
 
         $this->data_latih_optimasi->insertDataLatihOptimize($optimize);

@@ -14,23 +14,35 @@ class PSOController extends MainController
     protected $sumParticle;
     protected $c1;
     protected $c2;
+    protected $r1;
+    protected $r2;
     // protected $bestFitness;
 
-    public function __construct($data, $c1 = null, $c2 = null, $maxiteration = null)
+    public function __construct($data, $c1 = null, $c2 = null, $r1 = null, $r2 = null, $maxiteration = null)
     {
         // Deafult Nilai Batas Iterasi Jika Inputan Kosong
         if (empty($maxiteration)) {
             $maxiteration = 30;
         }
 
-        // Default Nilai C1 Jika C1 Dalam Inputan Kosong
+        // Default Nilai C1 (Min) Jika C1 Dalam Inputan Kosong
         if (empty($c1)) {
             $c1 = 2;
         }
 
-        // Default Nilai C2 Jika C2 Dalam Inputan Kosong
+        // Default Nilai C2 (Max) Jika C2 Dalam Inputan Kosong
         if (empty($c2)) {
             $c2 = 2;
+        }
+
+        // Default Nilai R1 (Min) Jika R1 Dalam Inputan Kosong
+        if (empty($c1)) {
+            $r1 = 0.1;
+        }
+
+        // Default Nilai R2 (Max) Jika R2 Dalam Inputan Kosong
+        if (empty($c2)) {
+            $r2 = 0.9;
         }
 
         // Inisialisasi Swarm Particle Mengambil Data Dari Mapping Yang Sudah Dibuat
@@ -82,14 +94,19 @@ class PSOController extends MainController
      * @return int $number
      * 
      */
-    protected function generateRandomCNumber($id_number)
+    protected function generateRandomCNumber()
     {
-        $number = [];
-        for ($i = 0; $i < 9; $i++) {
-            $number[$i + 1] = "0." . $i + 1;
-        }
-        $number[10] = 1;
-        return $number[$id_number];
+        // 
+        $min = $this->c1;
+        $max = $this->c2;
+        
+        $range = range($min, $max, 0.01);
+
+        $total_range = count($range);
+
+        $rand = rand(0, $total_range - 1);
+
+        return $range[$rand];
 
         // return 0.1;
     }
@@ -101,14 +118,18 @@ class PSOController extends MainController
      * @return int $number
      * 
      */
-    protected function generateRandomNumber($id_number)
+    protected function generateRandomNumber()
     {
-        $number = [];
-        for ($i = 0; $i < 9; $i++) {
-            $number[$i + 1] = "0." . $i + 1;
-        }
-        $number[10] = 1;
-        return $number[$id_number];
+        $min = $this->r1;
+        $max = $this->r2;
+        
+        $range = range($min, $max, 0.01);
+
+        $total_range = count($range);
+
+        $rand = rand(0, $total_range - 1);
+
+        return $range[$rand];
 
         // return 0.2;
     }
@@ -194,8 +215,8 @@ class PSOController extends MainController
     protected function calculateVelocity($index, $dimention, $gbest)
     {
         $velocity = $this->generateRandomWeightNumber($index) * $this->swarm[$index]['VELOCITY'][$dimention] +
-            $this->c1 * $this->generateRandomNumber(rand(1, 10)) * ($this->swarm[$index]['P_BEST']['POSITION'][$dimention] -
-                $this->swarm[$index]['POSITION'][$dimention]) + $this->c2 * $this->generateRandomNumber(rand(1, 10)) * ($this->swarm[$gbest]['POSITION'][$dimention] -
+            $this->generateRandomCNumber() * $this->generateRandomNumber() * ($this->swarm[$index]['P_BEST']['POSITION'][$dimention] -
+                $this->swarm[$index]['POSITION'][$dimention]) + $this->generateRandomCNumber() * $this->generateRandomNumber() * ($this->swarm[$gbest]['POSITION'][$dimention] -
                 $this->swarm[$index]['POSITION'][$dimention]);
         return $velocity;
     }
